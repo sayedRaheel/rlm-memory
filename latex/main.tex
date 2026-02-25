@@ -214,8 +214,8 @@ windows.
 \textbf{LongMemEval}~\cite{longmemeval2025} (Wu et al., ICLR 2025)
 introduces a rigorous benchmark covering five memory abilities across 500
 sessions from real-world chat logs.
-\textbf{Hindsight}~\cite{hindsight2025} achieves 91.4\% with Gemini-3
-via selective memory formation.
+\textbf{Hindsight}~\cite{hindsight2025} achieves 91.4\% via selective
+memory formation (open-source backbone, model unspecified in paper).
 \textbf{Zep/Graphiti}~\cite{zep2025} uses temporal knowledge graphs,
 reaching 71.2\% with GPT-4o.
 \textbf{MemBuilder}~\cite{membuilder2026} fine-tunes Qwen3-4B to 85.75\%.
@@ -739,7 +739,7 @@ benchmark; published results use the full 500. We separate the
 \midrule
 \multicolumn{6}{l}{\textit{Trained systems:}} \\
 Obs.\ Memory~\cite{obs2025}      & GPT-5-mini    & 94.9\% & Agent writes memories & \yes & \yes \\
-Hindsight~\cite{hindsight2025}   & Gemini-3      & 91.4\% & Selective formation  & \yes & \yes \\
+Hindsight~\cite{hindsight2025}   & OS 20B+       & 91.4\% & Selective formation  & \yes & \yes \\
 MemBuilder~\cite{membuilder2026} & Qwen3-4B      & 85.8\% & Fine-tuned           & \yes (SFT) & \yes \\
 Zep/Graphiti~\cite{zep2025}      & GPT-4o        & 71.2\% & Temporal KG          & \yes & \yes \\
 \midrule

@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+
+# Virtual environments
+venv/
+.env
+.venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Large dataset files (265MB — too large for GitHub)
+# Download from: https://github.com/xiaowu0162/LongMemEval
+eval/data/longmemeval_s_cleaned.json
+eval/data/*.json
+
+# API keys / secrets
+.env
+*.env
+
+# IDE
+.vscode/
+.idea/

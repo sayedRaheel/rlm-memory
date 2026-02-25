@@ -1,0 +1,242 @@
+Loading dataset from /Users/sayedraheel/Desktop/Work/research test/rlm_memory/eval/data/longmemeval_s_cleaned.json ...
+  Loaded 500 samples.
+
+RLM-Memory — Real LongMemEval Evaluation
+  Model: gpt-4o-mini | Sub-model: gpt-4o-mini
+  Samples: 500 (stratified from 500 total)
+  Types:   single-session-user, single-session-assistant, single-session-preference, multi-session, temporal-reasoning, knowledge-update
+  Truncation window: 32,000 chars
+
+[1/500] id=b320f3f8 | type=single-session-user | turns=509 | chars=479,887
+  Q: What type of action figure did I buy from a thrift store?
+  A: a blue Snaggletooth
+  RLM:        EM=1.00 F1=0.3333 | 52.1s | 6221 tok | 'You bought a rare blue Snaggletooth action figure from a thrift store.'
+  Truncation: EM=0.00 F1=0.0000 | 4.1s | 'I don't know.'
+
+[2/500] id=gpt4_731e37d7 | type=multi-session | turns=573 | chars=487,009
+  Q: How much total money did I spend on attending workshops in the last four months?
+  A: $720
+  RLM:        EM=0.00 F1=0.0000 | 46.8s | 6661 tok | '20 dollars + 200 dollars + 500 dollars'
+  Truncation: EM=0.00 F1=0.0000 | 1.0s | 'I don't know.'
+
+[3/500] id=gpt4_b5700ca9 | type=temporal-reasoning | turns=589 | chars=487,846
+  Q: How many days ago did I attend the Maundy Thursday service at the Episcopal Church?
+  A: 4 days.
+  RLM:        EM=1.00 F1=0.8000 | 56.8s | 7537 tok | '4 days ago'
+  Truncation: EM=1.00 F1=0.2500 | 1.4s | 'You attended the Maundy Thursday service on April 6, 2023, which was 4 days ago.'
+
+[4/500] id=18bc8abd | type=knowledge-update | turns=480 | chars=477,463
+  Q: What brand of BBQ sauce am I currently obsessed with?
+  A: Kansas City Masterpiece
+  RLM:        EM=1.00 F1=0.4286 | 36.7s | 6021 tok | 'Sweet Baby Ray's BBQ sauce, Kansas City Masterpiece BBQ sauce'
+  Truncation: EM=1.00 F1=0.7500 | 6.3s | 'Kansas City Masterpiece BBQ sauce.'
+
+[5/500] id=b9cfe692 | type=temporal-reasoning | turns=540 | chars=492,792
+  Q: How long did I take to finish 'The Seven Husbands of Evelyn Hugo' and 'The Nightingale' combined?
+  A: 5.5 weeks
+  RLM:        EM=1.00 F1=0.6667 | 89.6s | 28000 tok | '5.5 weeks'
+  Truncation: EM=0.00 F1=0.0000 | 1.4s | 'I don't know.'
+
+[6/500] id=gpt4_cd90e484 | type=temporal-reasoning | turns=560 | chars=492,760
+  Q: How long did I use my new binoculars before I saw the American goldfinches returning to the area?
+  A: Two weeks
+  RLM:        EM=0.00 F1=0.0000 | 369.9s | 189971 tok | 'I don't know'
+  Truncation: EM=0.00 F1=0.0000 | 0.8s | 'I don't know.'
+
+[7/500] id=2318644b | type=multi-session | turns=564 | chars=471,762
+  Q: How much more did I spend on accommodations per night in Hawaii compared to Tokyo?
+  A: $270
+  RLM:        EM=0.00 F1=0.0000 | 370.4s | 154190 tok | 'I don't know'
+  Truncation: EM=0.00 F1=0.0000 | 4.0s | 'I don't know.'
+
+[8/500] id=54026fce | type=single-session-preference | turns=521 | chars=487,298
+  Q: I've been thinking about ways to stay connected with my colleagues. Any suggestions?
+  A: The user would prefer responses that acknowledge their desire for social interaction and collaboration while working remotely, utilizing their previous experiences with company initiatives and team collaborations. They might prefer suggestions of virtual team-building activities, regular check-ins, or joining interest-based groups within the company. The user may not prefer generic suggestions that do not take into account their specific work situation or previous attempts at staying connected with colleagues.
+  RLM:        EM=0.00 F1=0.1726 | 101.7s | 17504 tok | 'Here are some suggestions to help you stay connected with your colleagues:
+
+1. *'
+  Truncation: EM=0.00 F1=0.0000 | 2.1s | 'I don't know.'
+
+[9/500] id=eeda8a6d | type=multi-session | turns=562 | chars=500,268
+  Q: How many fish are there in total in both of my aquariums?
+  A: 17
+  RLM:        EM=0.00 F1=0.0000 | 48.5s | 6790 tok | 'I don't know'
+  Truncation: EM=0.00 F1=0.0000 | 4.8s | 'I don't know.'
+
+[10/500] id=gpt4_d12ceb0e | type=multi-session | turns=522 | chars=485,544
+  Q: What is the average age of me, my parents, and my grandparents?
+  A: 59.6
+  RLM:        EM=0.00 F1=0.0000 | 42.5s | 6404 tok | '61.67 years'
+  Truncation: EM=0.00 F1=0.0000 | 2.5s | 'I don't know.'
+
+[11/500] id=ad7109d1 | type=single-session-user | turns=510 | chars=484,994
+  Q: What speed is my new internet plan?
+  A: 500 Mbps
+  RLM:        EM=1.00 F1=0.4000 | 35.9s | 5961 tok | 'Your new internet plan speed is 500 Mbps.'
+  Truncation: EM=0.00 F1=0.0000 | 1.1s | 'I don't know.'
+
+[12/500] id=e4e14d04 | type=temporal-reasoning | turns=506 | chars=496,337
+  Q: How long had I been a member of 'Book Lovers Unite' when I attended the meetup?
+  A: Two weeks
+  RLM:        EM=0.00 F1=0.5000 | 39.0s | 6118 tok | 'three weeks'
+  Truncation: EM=0.00 F1=0.0000 | 1.4s | 'I don't know.'
+
+[13/500] id=ec81a493 | type=single-session-user | turns=546 | chars=516,239
+  Q: How many copies of my favorite artist's debut album were released worldwide?
+  A: 500
+  RLM:        EM=1.00 F1=0.6667 | 1329.9s | 145556 tok | '500 copies'
+  Truncation: EM=0.00 F1=0.0000 | 13.3s | 'I don't know.'
+
+[14/500] id=ba358f49 | type=multi-session | turns=450 | chars=488,109
+  Q: How many years will I be when my friend Rachel gets married?
+  A: 33
+  RLM:        EM=0.00 F1=0.0000 | 2890.0s | 156402 tok | 'I don't know'
+  Truncation: EM=0.00 F1=0.0000 | 11.6s | 'I don't know.'
+
+[15/500] id=2e6d26dc | type=multi-session | turns=548 | chars=483,817
+  Q: How many babies were born to friends and family members in the last few months?
+  A: 5
+  RLM:        EM=1.00 F1=0.6667 | 482.1s | 7103 tok | '5 babies'
+  Truncation: EM=0.00 F1=0.0000 | 11.9s | 'I don't know.'
+
+[16/500] id=545bd2b5 | type=single-session-user | turns=505 | chars=481,116
+  Q: How much screen time have I been averaging on Instagram per day?
+  A: 2 hours
+  RLM:        EM=1.00 F1=0.2000 | 395.2s | 6013 tok | 'You have been averaging around 2 hours of screen time on Instagram per day for t'
+  Truncation: EM=0.00 F1=0.0000 | 10.6s | 'I don't know.'
+
+[17/500] id=c7dc5443 | type=knowledge-update | turns=524 | chars=495,725
+  Q: What is my current record in the recreational volleyball league?
+  A: 5-2
+  RLM:        EM=1.00 F1=1.0000 | 409.7s | 6346 tok | '5-2'
+  Truncation: EM=0.00 F1=0.0000 | 10.0s | 'I don't know.'
+
+[18/500] id=affe2881 | type=knowledge-update | turns=528 | chars=485,687
+  Q: How many different species of birds have I seen in my local park?
+  A: 32
+  RLM:        EM=1.00 F1=0.3333 | 397.9s | 6036 tok | '32 different species of birds'
+  Truncation: EM=0.00 F1=0.0000 | 10.7s | 'I don't know.'
+
+[19/500] id=2133c1b5 | type=knowledge-update | turns=574 | chars=493,078
+  Q: How long have I been living in my current apartment in Harajuku?
+  A: 3 months
+  RLM:        EM=1.00 F1=1.0000 | 444.3s | 6645 tok | '3 months'
+  Truncation: EM=0.00 F1=0.0000 | 19.3s | 'I don't know.'
+
+[20/500] id=36b9f61e | type=multi-session | turns=537 | chars=494,589
+  Q: What is the total amount I spent on luxury items in the past few months?
+  A: $2,500
+  RLM:        EM=0.00 F1=0.0000 | 429.6s | 6577 tok | '$1300'
+  Truncation: EM=0.00 F1=0.0000 | 1.0s | 'I don't know.'
+
+[21/500] id=gpt4_70e84552_abs | type=temporal-reasoning | turns=570 | chars=492,782
+  Q: Which task did I complete first, fixing the fence or purchasing three cows from Peter?
+  A: The information provided is not enough. You mentioned fixing the fence but did not mention purchasing cows from Peter.
+  RLM:        EM=0.00 F1=0.2105 | 2626.0s | 110202 tok | 'fixing the fence'
+  Truncation: EM=0.00 F1=0.0000 | 14.0s | 'I don't know.'
+
+[22/500] id=08e075c7 | type=knowledge-update | turns=529 | chars=499,999
+  Q: How long have I been using my Fitbit Charge 3?
+  A: 9 months
+  RLM:        EM=1.00 F1=1.0000 | 406.1s | 6184 tok | '9 months'
+  Truncation: EM=0.00 F1=0.0000 | 0.9s | 'I don't know.'
+
+[23/500] id=gpt4_76048e76 | type=temporal-reasoning | turns=526 | chars=490,469
+  Q: Which vehicle did I take care of first in February, the bike or the car?
+  A: bike
+  RLM:        EM=0.00 F1=0.0000 | 400.5s | 6242 tok | 'You took care of your car first in February.'
+  Truncation: EM=0.00 F1=0.0000 | 11.5s | 'I don't know.'
+
+[24/500] id=f9e8c073 | type=knowledge-update | turns=557 | chars=501,371
+  Q: How many sessions of the bereavement support group did I attend?
+  A: five
+  RLM:        EM=0.00 F1=0.0000 | 470.9s | 6925 tok | '8 sessions'
+  Truncation: EM=0.00 F1=0.0000 | 12.1s | 'I don't know.'
+
+[25/500] id=06878be2 | type=single-session-preference | turns=491 | chars=497,135
+  Q: Can you suggest some accessories that would complement my current photography setup?
+  A: The user would prefer suggestions of Sony-compatible accessories or high-quality photography gear that can enhance their photography experience. They may not prefer suggestions of other brands' equipment or low-quality gear.
+  RLM:        EM=0.00 F1=0.1368 | 3345.5s | 183322 tok | '"Here are some accessories that would complement your current photography setup,'
+  Truncation: EM=0.00 F1=0.0000 | 11.6s | 'I don't know.'
+
+[26/500] id=6c49646a | type=multi-session | turns=472 | chars=500,830
+  Q: What is the total distance I covered in my four road trips?
+  A: 3,000 miles
+  RLM:        EM=0.00 F1=0.3333 | 388.6s | 6098 tok | '1,960 miles'
+  Truncation: EM=0.00 F1=0.0000 | 10.6s | 'I don't know.'
+
+[27/500] id=37f165cf | type=multi-session | turns=612 | chars=495,251
+  Q: What was the page count of the two novels I finished in January and March?
+  A: 856
+  RLM:        EM=0.00 F1=0.0000 | 3126.1s | 173957 tok | 'I don't know'
+  Truncation: EM=0.00 F1=0.0000 | 18.8s | 'I don't know.'
+
+[28/500] id=60036106 | type=multi-session | turns=527 | chars=489,931
+  Q: What was the total number of people reached by my Facebook ad campaign and Instagram influencer collaboration?
+  A: 12,000
+  RLM:        EM=1.00 F1=1.0000 | 385.5s | 6297 tok | '12,000'
+  Truncation: EM=0.00 F1=0.0000 | 9.9s | 'I don't know.'
+
+[29/500] id=gpt4_93f6379c | type=temporal-reasoning | turns=487 | chars=506,075
+  Q: Which group did I join first, 'Page Turners' or 'Marketing Professionals'?
+  A: Page Turners
+  RLM:        EM=0.00 F1=0.0000 | 2558.0s | 130326 tok | 'Marketing Professionals'
+  Truncation: EM=0.00 F1=0.0000 | 1.0s | 'I don't know.'
+
+[30/500] id=gpt4_78cf46a3 | type=temporal-reasoning | turns=554 | chars=486,417
+  Q: Which event happened first, the narrator losing their phone charger or the narrator receiving their new phone case?
+  A: Receiving the new phone case
+  RLM:        EM=0.00 F1=0.0000 | 3406.5s | 186304 tok | 'I don't know'
+  Truncation: EM=0.00 F1=0.0000 | 18.3s | '[ERROR: Error generating completion: Error code: 429 - {'error': {'message': 'Ra'
+
+[31/500] id=778164c6 | type=single-session-assistant | turns=592 | chars=478,131
+  Q: I was looking back at our previous conversation about Caribbean dishes and I was wondering, what was the name of that Jamaican dish you recommended I try with snapper that has fruit in it?
+  A: Grilled Snapper with Mango Salsa
+  RLM:        EM=1.00 F1=1.0000 | 433.1s | 6872 tok | 'Grilled Snapper with Mango Salsa'
+  Truncation: EM=1.00 F1=0.4545 | 10.6s | 'The Jamaican dish I recommended with snapper that has fruit in it is Grilled Sna'
+
+[32/500] id=1b9b7252 | type=single-session-assistant | turns=512 | chars=486,075
+  Q: I wanted to follow up on our previous conversation about mindfulness techniques. You mentioned some great resources for guided imagery exercises, can you remind me of the website that had free exercises like 'The Mountain Meditation' and 'The Body Scan Meditation'?
+  A: Mindful.org.
+  RLM:        EM=1.00 F1=0.2353 | 397.8s | 13896 tok | 'The website that has free exercises like 'The Mountain Meditation' and 'The Body'
+  Truncation: EM=0.00 F1=0.0000 | 10.9s | 'I don't know.'
+
+[33/500] id=gpt4_b4a80587 | type=temporal-reasoning | turns=589 | chars=492,890
+  Q: Which event happened first, the road trip to the coast or the arrival of the new prime lens?
+  A: The arrival of the new prime lens
+  RLM:        EM=1.00 F1=0.3030 | 414.9s | 6612 tok | 'The arrival of the new prime lens happened first, as the user mentioned they got'
+  Truncation: EM=0.00 F1=0.0000 | 10.7s | 'I don't know.'
+
+[34/500] id=00ca467f | type=multi-session | turns=533 | chars=500,768
+  Q: How many doctor's appointments did I go to in March?
+  A: 2
+  RLM:        EM=0.00 F1=0.0000 | 423.4s | 6425 tok | '3'
+  Truncation: EM=0.00 F1=0.0000 | 9.8s | 'I don't know.'
+
+[35/500] id=1a1907b4 | type=single-session-preference | turns=580 | chars=505,593
+  Q: I've been thinking about making a cocktail for an upcoming get-together, but I'm not sure which one to choose. Any suggestions?
+  A: Considering their mixology class background, the user would prefer cocktail suggestions that build upon their existing skills and interests, such as creative variations of classic cocktails or innovative twists on familiar flavors. They might appreciate recommendations that incorporate their experience with refreshing summer drinks like Pimm's Cup. The user would not prefer overly simplistic or basic cocktail recipes, and may not be interested in suggestions that don't take into account their mixology class background.
+  RLM:        EM=0.00 F1=0.1692 | 1265.7s | 32194 tok | '"You can make a Pimm's Cup with a Twist, which is a refreshing summer cocktail t'
+  Truncation: EM=0.00 F1=0.0513 | 10.7s | 'I don't know.'
+
+[36/500] id=gpt4_f420262d | type=temporal-reasoning | turns=497 | chars=490,734
+  Q: What was the airline that I flied with on Valentine's day?
+  A: American Airlines
+  RLM:        EM=1.00 F1=1.0000 | 2225.5s | 100013 tok | 'American Airlines'
+  Truncation: EM=0.00 F1=0.0000 | 9.9s | 'I don't know.'
+
+[37/500] id=gpt4_e061b84g | type=temporal-reasoning | turns=624 | chars=485,454
+  Q: I mentioned participating in a sports event two weeks ago. What was the event?
+  A: The company's annual charity soccer tournament.
+  RLM:        EM=1.00 F1=0.5714 | 524.5s | 7296 tok | 'The event you mentioned participating in two weeks ago was the company's annual '
+  Truncation: EM=0.00 F1=0.0000 | 0.9s | 'I don't know.'
+
+[38/500] id=5e1b23de | type=temporal-reasoning | turns=490 | chars=486,761
+  Q: How many months ago did I attend the photography workshop?
+  A: 3
+  RLM:        EM=0.00 F1=0.0000 | 2727.5s | 139208 tok | '0 months ago'
+  Truncation: EM=0.00 F1=0.0000 | 9.6s | 'I don't know.'
+
+[39/500] id=gpt4_5438fa52 | type=temporal-reasoning | turns=563 | chars=484,082
+  Q: Which event happened first, my attendance at a cultural festival or the start of my Spanish classes?
+  A: Spanish classes

@@ -1,0 +1,48 @@
+{
+  "n_samples": 4,
+  "model": "gpt-4o-mini",
+  "errors": 0,
+  "overall": {
+    "rlm": {
+      "em": 0.25,
+      "f1": 0.3794,
+      "avg_tokens": 122712.75,
+      "avg_latency_s": 222.2091
+    },
+    "truncation": {
+      "em": 0.0,
+      "f1": 0.0769,
+      "avg_latency_s": 1.7923
+    }
+  },
+  "by_type": {
+    "multi-session": {
+      "n": 1,
+      "rlm_em": 1.0,
+      "rlm_f1": 1.0,
+      "trunc_em": 0.0,
+      "trunc_f1": 0.0
+    },
+    "knowledge-update": {
+      "n": 1,
+      "rlm_em": 0.0,
+      "rlm_f1": 0.0,
+      "trunc_em": 0.0,
+      "trunc_f1": 0.0
+    },
+    "single-session-preference": {
+      "n": 1,
+      "rlm_em": 0.0,
+      "rlm_f1": 0.1176,
+      "trunc_em": 0.0,
+      "trunc_f1": 0.0
+    },
+    "temporal-reasoning": {
+      "n": 1,
+      "rlm_em": 0.0,
+      "rlm_f1": 0.4,
+      "trunc_em": 0.0,
+      "trunc_f1": 0.3077
+    }
+  }
+}

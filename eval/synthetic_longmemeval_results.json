@@ -1,0 +1,68 @@
+{
+  "n_samples": 50,
+  "model": "gpt-4o-mini",
+  "overall": {
+    "rlm": {
+      "em": 0.9,
+      "f1": 0.6913,
+      "avg_tokens": 7199.8,
+      "avg_latency_s": 4.6928
+    },
+    "truncation": {
+      "em": 0.94,
+      "f1": 0.4603,
+      "avg_latency_s": 0.7492
+    },
+    "full_context": {
+      "em": 0.94,
+      "f1": 0.4635
+    }
+  },
+  "by_type": {
+    "temporal-reasoning": {
+      "n": 10,
+      "rlm_em": 1.0,
+      "rlm_f1": 0.9182,
+      "trunc_em": 0.7,
+      "trunc_f1": 0.1852,
+      "full_em": 0.7,
+      "full_f1": 0.1908
+    },
+    "knowledge-update": {
+      "n": 10,
+      "rlm_em": 0.7,
+      "rlm_f1": 0.4643,
+      "trunc_em": 1.0,
+      "trunc_f1": 0.4659,
+      "full_em": 1.0,
+      "full_f1": 0.4714
+    },
+    "single-session-user": {
+      "n": 10,
+      "rlm_em": 0.8,
+      "rlm_f1": 0.3738,
+      "trunc_em": 1.0,
+      "trunc_f1": 0.3871,
+      "full_em": 1.0,
+      "full_f1": 0.3871
+    },
+    "multi-session-user": {
+      "n": 10,
+      "rlm_em": 1.0,
+      "rlm_f1": 0.7,
+      "trunc_em": 1.0,
+      "trunc_f1": 0.2634,
+      "full_em": 1.0,
+      "full_f1": 0.2682
+    },
+    "abstention": {
+      "n": 10,
+      "rlm_em": 1.0,
+      "rlm_f1": 1.0,
+      "trunc_em": 1.0,
+      "trunc_f1": 1.0,
+      "full_em": 1.0,
+      "full_f1": 1.0
+    }
+  }
+}

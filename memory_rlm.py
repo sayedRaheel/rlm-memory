@@ -12,6 +12,8 @@ original RLM paper does for documents, but applied to live chat history.
 import os
 import sys
 import time
+import threading
+import concurrent.futures
 from typing import Optional, Dict, Any, List
 
 # ---------------------------------------------------------------------------
@@ -123,11 +125,14 @@ class MemoryRLM:
         max_iterations: int = 10,
         api_key: Optional[str] = None,
         verbose: bool = False,
+        max_workers: int = 20,
     ):
         self.model = model
         self.sub_model = sub_model
         self.max_iterations = max_iterations
         self.verbose = verbose
+        self.max_workers = max_workers
+        self._api_key = api_key or os.environ.get("OPENAI_API_KEY")
         self.llm = OpenAIClient(api_key=api_key, model=model)
         self._last_stats: Dict[str, Any] = {}
 
@@ -159,6 +164,90 @@ class MemoryRLM:
         # ---- Primary: sub-agent-ready session list ----
         repl_env.globals["sessions"]      = sessions_text   # list[str] one per session
         repl_env.globals["session_dates"] = session_dates   # list[str] date label per session
+
+        # ---- Parallel query primitive ----
+        # Shared token counter for parallel sub-agent calls
+        _parallel_tokens: Dict[str, int] = {"input": 0, "output": 0}
+        _token_lock = threading.Lock()
+
+        _api_key  = self._api_key
+        _submodel = self.sub_model
+        _workers  = self.max_workers
+        _verbose  = self.verbose
+
+        def llm_query_parallel(
+            sessions_list: List[str],
+            dates_list: List[str],
+            question: str,
+            workers: Optional[int] = None,
+        ) -> List[str]:
+            """
+            Query ALL sessions in parallel using a thread pool.
+            Dramatically faster than a sequential for loop (50 sessions -> ~5s vs ~200s).
+
+            Args:
+                sessions_list : list of session texts — pass `sessions`
+                dates_list    : list of date labels  — pass `session_dates`
+                question      : the question to answer
+                workers       : max parallel threads (default: min(n_sessions, 20))
+
+            Returns:
+                List of finding strings for sessions where relevant info was found.
+                Sessions that returned NOT_FOUND are excluded.
+
+            Example:
+                findings = llm_query_parallel(sessions, session_dates, question)
+                if findings:
+                    print("\\n".join(findings))
+                else:
+                    print("NOT_FOUND in any session")
+            """
+            import openai as _oai
+
+            n = len(sessions_list)
+            w = workers or min(n, _workers)
+
+            def _query_one(idx: int) -> Optional[str]:
+                session_text = sessions_list[idx]
+                date = dates_list[idx] if idx < len(dates_list) else f"Session {idx}"
+                prompt = (
+                    f"Conversation session {idx} (date: {date}):\n"
+                    f"{session_text}\n\n"
+                    f"Question: {question}\n"
+                    f"If this session contains relevant information, extract it concisely.\n"
+                    f"If nothing relevant, reply exactly: NOT_FOUND"
+                )
+                client = _oai.OpenAI(api_key=_api_key)
+                resp = client.chat.completions.create(
+                    model=_submodel,
+                    messages=[{"role": "user", "content": prompt}],
+                    max_tokens=300,
+                    temperature=0,
+                )
+                content = resp.choices[0].message.content.strip()
+                # Track token usage
+                with _token_lock:
+                    _parallel_tokens["input"]  += resp.usage.prompt_tokens
+                    _parallel_tokens["output"] += resp.usage.completion_tokens
+                if "NOT_FOUND" not in content.upper():
+                    if _verbose:
+                        print(f"  [parallel] session {idx} → {content[:80]}")
+                    return f"[Session {idx} | {date}]: {content}"
+                return None
+
+            t_start = time.time()
+            with concurrent.futures.ThreadPoolExecutor(max_workers=w) as executor:
+                results = list(executor.map(_query_one, range(n)))
+            elapsed = time.time() - t_start
+
+            findings = [r for r in results if r is not None]
+            if _verbose:
+                print(f"  [parallel] {n} sessions in {elapsed:.1f}s | "
+                      f"{len(findings)} hits | "
+                      f"{_parallel_tokens['input']+_parallel_tokens['output']} tok")
+            return findings
+
+        repl_env.globals["llm_query_parallel"] = llm_query_parallel
 
         # ---- Secondary: flat helpers for quick checks ----
         def search_history(keyword: str) -> List[Dict]:
@@ -263,12 +352,14 @@ class MemoryRLM:
         # --- Record stats ---
         duration = time.time() - t0
         usage = self.llm.get_usage_summary()
+        parallel_tok = _parallel_tokens["input"] + _parallel_tokens["output"]
         self._last_stats = {
             "iterations": iterations_used,
             "duration_s": round(duration, 2),
             "input_tokens": usage["total_input_tokens"],
             "output_tokens": usage["total_output_tokens"],
-            "total_tokens": usage["total_tokens"],
+            "total_tokens": usage["total_tokens"] + parallel_tok,
+            "parallel_tokens": parallel_tok,
             "cost_usd": round(usage["total_cost"], 6),
             "history_turns": history.total_turns(),
             "history_chars": history.total_chars(),

@@ -32,11 +32,13 @@ Total History (490K chars)
 
 ## Results (Real LongMemEval-S, 100 class-balanced samples)
 
-| Method | EM | F1 | Avg Tokens | Scalable? |
-|---|---|---|---|---|
-| Truncation (32K chars) | 5.0% | 4.0% | ~8K | ✓ |
-| **RLM-Memory (ours)** | **46.0%** | **42.9%** | **37,216** | **✓** |
-| Full-context (oracle) | 55.4% | — | ~120K | ✗ (fails >128K tokens) |
+| Method | EM | F1 | Avg Tokens | Latency | Scalable? |
+|---|---|---|---|---|---|
+| Truncation (32K chars) | 5.0% | 4.0% | ~8K | 2.9s | ✓ |
+| **RLM-Memory (ours)** | **46.0%** | **42.9%** | **37,216** | **~4s** ⚡ | **✓** |
+| Full-context (oracle) | 55.4% | — | ~120K | — | ✗ (fails >128K tokens) |
+
+> **Latency update:** parallel sub-agent execution (`llm_query_parallel` via `ThreadPoolExecutor`) reduces per-query latency from ~221s (sequential) to **~4s** — a **54× speedup** — with no accuracy loss. All sessions are queried simultaneously; wall time is bounded by the slowest single sub-agent call.
 
 ### By question type
 

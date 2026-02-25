@@ -240,3 +240,299 @@ RLM-Memory — Real LongMemEval Evaluation
 [39/500] id=gpt4_5438fa52 | type=temporal-reasoning | turns=563 | chars=484,082
   Q: Which event happened first, my attendance at a cultural festival or the start of my Spanish classes?
   A: Spanish classes
+  RLM:        EM=0.00 F1=0.0000 | 3428.6s | 194941 tok | 'I don't know'
+  Truncation: EM=0.00 F1=0.0000 | 10.1s | 'I don't know.'
+
+[40/500] id=29f2956b | type=single-session-user | turns=543 | chars=475,274
+  Q: How much time do I dedicate to practicing guitar every day?
+  A: 30 minutes
+  RLM:        EM=1.00 F1=0.8000 | 412.7s | 27918 tok | '30 minutes daily'
+  Truncation: EM=0.00 F1=0.0000 | 9.9s | 'I don't know.'
+
+[41/500] id=b5ef892d | type=multi-session | turns=568 | chars=497,524
+  Q: How many days did I spend on camping trips in the United States this year?
+  A: 8 days.
+  RLM:        EM=1.00 F1=1.0000 | 454.1s | 6802 tok | '8 days'
+  Truncation: EM=0.00 F1=0.0000 | 19.0s | 'I don't know.'
+
+[42/500] id=e6041065 | type=multi-session | turns=538 | chars=488,454
+  Q: What percentage of packed shoes did I wear on my last trip?
+  A: 40%
+  RLM:        EM=0.00 F1=0.0000 | 397.8s | 6618 tok | 'I don't know'
+  Truncation: EM=0.00 F1=0.0000 | 18.9s | 'I don't know.'
+
+[43/500] id=1568498a | type=single-session-assistant | turns=525 | chars=480,971
+  Q: I'm looking back at our previous chess game and I was wondering, what was the move you made after 27. Kg2 Bd5+?
+  A: 28. Kg3
+  RLM:        EM=1.00 F1=0.8000 | 406.5s | 6316 tok | '28. Kg3 Be6'
+  Truncation: EM=0.00 F1=0.0000 | 11.7s | 'I don't know.'
+
+[44/500] id=gpt4_7fce9456 | type=multi-session | turns=541 | chars=499,855
+  Q: How many properties did I view before making an offer on the townhouse in the Brookside neighborhood?
+  A: I viewed four properties before making an offer on the townhouse in the Brookside neighborhood. The reasons I didn't make an offer on them were: the kitchen of the bungalow needed serious renovation, the property in Cedar Creek was out of my budget, the noise from the highway was a deal-breaker for the 1-bedroom condo, and my offer on the 2-bedroom condo was rejected due to a higher bid.
+  RLM:        EM=0.00 F1=0.0333 | 2945.8s | 188570 tok | '1'
+  Truncation: EM=0.00 F1=0.0635 | 9.8s | 'I don't know.'
+
+[45/500] id=gpt4_b5700ca0 | type=temporal-reasoning | turns=550 | chars=497,748
+  Q: Where did I attend the religious activity last week?
+  A: the Episcopal Church
+  RLM:        EM=1.00 F1=0.4000 | 3323.6s | 209351 tok | 'You attended the Maundy Thursday service at the Episcopal Church.'
+  Truncation: EM=0.00 F1=0.0000 | 1.1s | 'I don't know.'
+
+[46/500] id=21436231 | type=single-session-user | turns=562 | chars=482,412
+  Q: How many largemouth bass did I catch on my fishing trip to Lake Michigan?
+  A: 12
+  RLM:        EM=1.00 F1=0.5000 | 455.9s | 6525 tok | '12 largemouth bass'
+  Truncation: EM=0.00 F1=0.0000 | 1.0s | 'I don't know.'
+
+[47/500] id=8979f9ec | type=multi-session | turns=512 | chars=501,054
+  Q: What is the total number of lunch meals I got from the chicken fajitas and lentil soup?
+  A: 8 meals
+  RLM:        EM=0.00 F1=0.6667 | 380.1s | 6759 tok | '8'
+  Truncation: EM=0.00 F1=0.0000 | 0.9s | 'I don't know.'
+
+[48/500] id=8a2466db | type=single-session-preference | turns=558 | chars=496,187
+  Q: Can you recommend some resources where I can learn more about video editing?
+  A: The user would prefer responses that suggest resources specifically tailored to Adobe Premiere Pro, especially those that delve into its advanced settings. They might not prefer general video editing resources or resources related to other video editing software.
+  RLM:        EM=0.00 F1=0.1111 | 2171.8s | 87868 tok | '"Here are some recommended resources where you can learn more about video editin'
+  Truncation: EM=0.00 F1=0.1466 | 6.6s | 'Here are some resources to learn more about video editing:
+
+1. **YouTube** - Man'
+
+[49/500] id=a2f3aa27 | type=knowledge-update | turns=492 | chars=489,097
+  Q: How many followers do I have on Instagram now?
+  A: 1300
+  RLM:        EM=1.00 F1=0.6667 | 413.3s | 6073 tok | '1300 followers'
+  Truncation: EM=0.00 F1=0.0000 | 1.0s | 'I don't know.'
+
+[50/500] id=80ec1f4f | type=multi-session | turns=533 | chars=495,032
+  Q: How many different museums or galleries did I visit in the month of February?
+  A: 2
+  RLM:        EM=0.00 F1=0.0000 | 443.2s | 6190 tok | '1 museum'
+  Truncation: EM=0.00 F1=0.0000 | 1.0s | 'I don't know.'
+
+[51/500] id=15745da0_abs | type=single-session-user | turns=597 | chars=479,417
+  Q: How long have I been collecting vintage films?
+  A: You did not mention this information. You mentioned collecting vintage cameras but not vintage films.
+  RLM:        EM=0.00 F1=0.0000 | 8755.8s | 181107 tok | 'I don't know'
+  Truncation: EM=0.00 F1=0.0000 | 1.0s | 'I don't know.'
+
+[52/500] id=1f2b8d4f | type=multi-session | turns=573 | chars=490,847
+  Q: What is the difference in price between my luxury boots and the similar pair found at the budget store?
+  A: $750
+  RLM:        EM=0.00 F1=0.0000 | 2721.7s | 6815 tok | 'The difference in price between your luxury boots and the similar pair found at '
+  Truncation: EM=0.00 F1=0.0000 | 1.9s | 'I don't know.'
+
+[53/500] id=a9f6b44c | type=multi-session | turns=521 | chars=493,928
+  Q: How many bikes did I service or plan to service in March?
+  A: 2
+  RLM:        EM=0.00 F1=0.0000 | 825.2s | 6158 tok | 'One bike'
+  Truncation: EM=0.00 F1=0.0000 | 1.1s | 'I don't know.'
+
+[54/500] id=41698283 | type=knowledge-update | turns=521 | chars=477,192
+  Q: What type of camera lens did I purchase most recently?
+  A: a 70-200mm zoom lens
+  RLM:        EM=0.00 F1=0.4000 | 424.0s | 6154 tok | 'Canon EF 70-200mm f/2.8L IS III USM lens'
+  Truncation: EM=0.00 F1=0.0000 | 2.3s | 'I don't know.'
+
+[55/500] id=1c0ddc50 | type=single-session-preference | turns=599 | chars=492,110
+  Q: Can you suggest some activities I can do during my commute to work?
+  A: The user would prefer suggestions related to listening to new podcasts or audiobooks, especially the genre beyond true crime or self-improvement, such as history. They may not be interested in activities that require visual attention, such as reading or watching videos, as they are commuting. The user would not prefer general podcast topics such as true crime or self-improvement, as the user wants to explore other topics.
+  RLM:        EM=0.00 F1=0.1124 | 1750.0s | 6813 tok | 'During your bike commute, you can engage in the following activities:
+
+**Product'
+  Truncation: EM=0.00 F1=0.0000 | 1.3s | 'I don't know.'
+
+[56/500] id=1d4da289 | type=single-session-assistant | turns=561 | chars=507,776
+  Q: I was thinking about our previous conversation about data privacy and security. You mentioned that companies use two-factor authentication to enhance security. Can you remind me what kind of two-factor authentication methods you were referring to?
+  A: I mentioned biometric authentication or one-time passwords (OTP) as examples of two-factor authentication methods.
+  RLM:        EM=0.00 F1=0.6000 | 3132.0s | 7376 tok | 'The two-factor authentication methods referred to include biometric authenticati'
+  Truncation: EM=0.00 F1=0.1553 | 9.1s | 'Two-factor authentication (2FA) methods include:
+
+1. **SMS codes**: A code sent '
+
+[57/500] id=184da446 | type=knowledge-update | turns=515 | chars=483,068
+  Q: How many pages of 'A Short History of Nearly Everything' have I read so far?
+  A: 220
+  RLM:        EM=1.00 F1=0.6667 | 3437.4s | 6051 tok | '220 pages'
+  Truncation: EM=1.00 F1=0.1429 | 1.3s | 'You have read 220 pages of "A Short History of Nearly Everything" so far.'
+
+[58/500] id=f4f1d8a4_abs | type=single-session-user | turns=556 | chars=496,877
+  Q: What did my dad gave me as a birthday gift?
+  A: You did not mention this information. You mentioned receiving a birthday gift from your sister, but not your dad.
+  RLM:        EM=0.00 F1=0.0000 | 7536.4s | 181357 tok | 'I don't know'
+  Truncation: EM=0.00 F1=0.0000 | 2.0s | 'I don't know.'
+
+[59/500] id=6ade9755 | type=single-session-user | turns=564 | chars=488,132
+  Q: Where do I take yoga classes?
+  A: Serenity Yoga
+  RLM:        EM=1.00 F1=0.1053 | 50.6s | 6620 tok | 'You can take yoga classes at Serenity Yoga, as mentioned in your conversation. A'
+  Truncation: EM=0.00 F1=0.0000 | 1.2s | 'I don't know.'
+
+[60/500] id=dad224aa | type=knowledge-update | turns=569 | chars=495,280
+  Q: What time do I wake up on Saturday mornings?
+  A: 7:30 am
+  RLM:        EM=1.00 F1=0.4615 | 47.1s | 6427 tok | 'You wake up at 7:30 am on Saturday mornings.'
+  Truncation: EM=1.00 F1=0.4615 | 3.5s | 'You wake up at 7:30 am on Saturday mornings.'
+
+[61/500] id=19b5f2b3 | type=single-session-user | turns=525 | chars=485,269
+  Q: How long was I in Japan for?
+  A: two weeks
+  RLM:        EM=1.00 F1=0.4444 | 40.9s | 5873 tok | 'You were in Japan for two weeks.'
+  Truncation: EM=0.00 F1=0.0000 | 2.8s | 'I don't know.'
+
+[62/500] id=2311e44b | type=multi-session | turns=543 | chars=497,341
+  Q: How many pages do I have left to read in 'The Nightingale'?
+  A: 190
+  RLM:        EM=0.00 F1=0.0000 | 55.3s | 6635 tok | '250 pages'
+  Truncation: EM=0.00 F1=0.0000 | 2.0s | 'I don't know.'
+
+[63/500] id=0ddfec37_abs | type=knowledge-update | turns=492 | chars=492,716
+  Q: How many autographed football have I added to my collection in the first three months of collection?
+  A: The information provided is not enough. You mentioned collecting autographed baseball but not football.
+  RLM:        EM=0.00 F1=0.0000 | 361.8s | 166877 tok | 'I don't know'
+  Truncation: EM=0.00 F1=0.0000 | 1.6s | 'I don't know.'
+
+[64/500] id=09ba9854_abs | type=multi-session | turns=563 | chars=493,168
+  Q: How much will I save by taking the bus from the airport to my hotel instead of a taxi?
+  A: The information provided is not enough. You did not mention how much will the bus take.
+  RLM:        EM=0.00 F1=0.1481 | 50.9s | 6804 tok | 'You could potentially save around $40-$150 by taking the bus instead of a taxi.'
+  Truncation: EM=0.00 F1=0.0000 | 10.0s | 'I don't know.'
+
+[65/500] id=b3c15d39 | type=multi-session | turns=553 | chars=465,091
+  Q: How many days did it take for me to receive the new remote shutter release after I ordered it?
+  A: 5 days. 6 days (including the last day) is also acceptable.
+  RLM:        EM=1.00 F1=1.0000 | 55.0s | 6919 tok | '5 days'
+  Truncation: EM=0.00 F1=0.0000 | 5.2s | 'I don't know.'
+
+[66/500] id=6613b389 | type=temporal-reasoning | turns=493 | chars=496,837
+  Q: How many months before my anniversary did Rachel get engaged?
+  A: 2
+  RLM:        EM=1.00 F1=0.2857 | 45.4s | 5748 tok | 'Approximately 2 months and 7 days'
+  Truncation: EM=0.00 F1=0.0000 | 1.7s | 'I don't know.'
+
+[67/500] id=4f54b7c9 | type=multi-session | turns=536 | chars=456,996
+  Q: How many antique items did I inherit or acquire from my family members?
+  A: 5
+  RLM:        EM=0.00 F1=0.0000 | 41.7s | 6161 tok | 'Three antique items'
+  Truncation: EM=0.00 F1=0.0000 | 5.6s | 'I don't know.'
+
+[68/500] id=031748ae_abs | type=knowledge-update | turns=575 | chars=499,658
+  Q: How many engineers do I lead when I just started my new role as Software Engineer Manager?
+  A: The information provided is not enough. You mentioned starting the role as Senior Software Engineer but not Software Engineer Manager.
+  RLM:        EM=0.00 F1=0.0833 | 42.4s | 6742 tok | 'You lead a team of five engineers.'
+  Truncation: EM=0.00 F1=0.0000 | 5.5s | 'I don't know.'
+
+[69/500] id=2a1811e2 | type=temporal-reasoning | turns=525 | chars=504,990
+  Q: How many days had passed between the Hindu festival of Holi and the Sunday mass at St. Mary's Church?
+  A: 21 days. 22 days (including the last day) is also acceptable.
+  RLM:        EM=0.00 F1=0.5000 | 44.0s | 6317 tok | '28 days'
+  Truncation: EM=0.00 F1=0.0000 | 2.0s | 'I don't know.'
+
+[70/500] id=8077ef71 | type=temporal-reasoning | turns=601 | chars=481,704
+  Q: How many days ago did I attend a networking event?
+  A: 26 days. 27 days (including the last day) is also acceptable.
+  RLM:        EM=0.00 F1=0.4000 | 48.0s | 6354 tok | '365 days ago'
+  Truncation: EM=0.00 F1=0.0000 | 0.9s | 'I don't know.'
+
+[71/500] id=5d3d2817 | type=single-session-user | turns=563 | chars=498,408
+  Q: What was my previous occupation?
+  A: Marketing specialist at a small startup
+  RLM:        EM=1.00 F1=0.4348 | 49.2s | 6747 tok | 'Your previous occupation was a marketing specialist at a small startup, where yo'
+  Truncation: EM=0.00 F1=0.0000 | 2.3s | 'I don't know.'
+
+[72/500] id=gpt4_4929293b | type=temporal-reasoning | turns=518 | chars=506,316
+  Q: What was the the life event of one of my relatives that I participated in a week ago?
+  A: my cousin's wedding
+  RLM:        EM=0.00 F1=0.4000 | 44.8s | 6546 tok | 'You participated in your cousin's wedding as a bridesmaid a week ago.'
+  Truncation: EM=0.00 F1=0.0000 | 1.9s | 'I don't know.'
+
+[73/500] id=c8090214_abs | type=temporal-reasoning | turns=559 | chars=492,702
+  Q: How many days before I bought my iPad did I attend the Holiday Market?
+  A: The information provided is not enough. You mentioned getting the iPhone 13 Pro and attending the market, but you did not mention buying an iPad.
+  RLM:        EM=0.00 F1=0.0000 | 44.6s | 6867 tok | 'approximately 169 days'
+  Truncation: EM=0.00 F1=0.0000 | 1.0s | 'I don't know.'
+
+[74/500] id=27016adc | type=multi-session | turns=536 | chars=502,222
+  Q: What percentage of the countryside property's price is the cost of the renovations I plan to do on my current house?
+  A: 10%
+  RLM:        EM=0.00 F1=0.0000 | 353.8s | 168726 tok | 'I don't know'
+  Truncation: EM=0.00 F1=0.0000 | 3.8s | 'I don't know.'
+
+[75/500] id=f0853d11 | type=temporal-reasoning | turns=546 | chars=492,572
+  Q: How many days had passed between the 'Walk for Hunger' event and the 'Coastal Cleanup' event?
+  A: 14 days. 8 days (including the last day) is also acceptable.
+  RLM:        EM=0.00 F1=0.0000 | 322.8s | 170420 tok | 'I don't know'
+  Truncation: EM=0.00 F1=0.0000 | 7.3s | 'I don't know.'
+
+[76/500] id=a4996e51 | type=multi-session | turns=560 | chars=495,543
+  Q: How many hours do I work in a typical week during peak campaign seasons?
+  A: 50
+  RLM:        EM=1.00 F1=0.6667 | 46.1s | 6399 tok | '50 hours'
+  Truncation: EM=0.00 F1=0.0000 | 6.0s | 'I don't know.'
+
+[77/500] id=e493bb7c | type=knowledge-update | turns=557 | chars=500,505
+  Q: Where is the painting 'Ethereal Dreams' by Emma Taylor currently hanging?
+  A: in my bedroom
+  RLM:        EM=0.00 F1=0.2105 | 56.1s | 6748 tok | 'The painting 'Ethereal Dreams' by Emma Taylor is currently hanging above the use'
+  Truncation: EM=0.00 F1=0.0000 | 1.2s | 'I don't know.'
+
+[78/500] id=9bbe84a2 | type=knowledge-update | turns=507 | chars=486,468
+  Q: What was my previous goal for my Apex Legends level before I updated my goal?
+  A: level 100
+  RLM:        EM=0.00 F1=0.0645 | 44.2s | 6444 tok | 'Your previous goal for your Apex Legends level was to focus on ranking up to lev'
+  Truncation: EM=0.00 F1=0.0000 | 1.3s | 'I don't know.'
+
+[79/500] id=0a34ad58 | type=single-session-preference | turns=527 | chars=498,667
+  Q: I’m a bit anxious about getting around Tokyo. Do you have any helpful tips?
+  A: The user would prefer responses that utilize their existing resources, such as their Suica card and TripIt app, to provide personalized tips for navigating Tokyo's public transportation. They might not prefer general tips or recommendations that do not take into account their prior preparations.
+  RLM:        EM=0.00 F1=0.1361 | 395.8s | 167415 tok | '"Here are some helpful tips for getting around Tokyo:\n\n1. **Use Public Transpo'
+  Truncation: EM=0.00 F1=0.1449 | 8.4s | 'Navigating Tokyo can be straightforward with these tips: 
+
+1. **Use Public Trans'
+
+[80/500] id=gpt4_385a5000 | type=temporal-reasoning | turns=544 | chars=484,659
+  Q: Which seeds were started first, the tomatoes or the marigolds?
+  A: Tomatoes
+  RLM:        EM=0.00 F1=0.0000 | 60.8s | 6627 tok | 'The marigold seeds were started first, arriving on March 3rd.'
+  Truncation: EM=0.00 F1=0.0000 | 8.3s | 'I don't know.'
+
+[81/500] id=0f05491a | type=knowledge-update | turns=534 | chars=483,301
+  Q: How many stars do I need to reach the gold level on my Starbucks Rewards app?
+  A: 120
+  RLM:        EM=1.00 F1=0.6667 | 45.7s | 6150 tok | '120 stars'
+  Truncation: EM=1.00 F1=0.1429 | 1.3s | 'You need **120 stars** to reach the gold level on your Starbucks Rewards app.'
+
+[82/500] id=1e043500 | type=single-session-user | turns=560 | chars=500,281
+  Q: What is the name of the playlist I created on Spotify?
+  A: Summer Vibes
+  RLM:        EM=1.00 F1=1.0000 | 373.8s | 6854 tok | 'Summer Vibes'
+  Truncation: EM=0.00 F1=0.0000 | 0.9s | 'I don't know.'
+
+[83/500] id=gpt4_194be4b3 | type=multi-session | turns=518 | chars=479,758
+  Q: How many musical instruments do I currently own?
+  A: I currently own 4 musical instruments. I've had the Fender Stratocaster electric guitar for 5 years, the Yamaha FG800 acoustic guitar for 8 years, the 5-piece Pearl Export drum set for an unspecified amount of time, and the Korg B1 piano for 3 years.
+  RLM:        EM=0.00 F1=0.4444 | 403.5s | 6017 tok | 'You currently own three musical instruments: a 5-piece Pearl Export drum set, a '
+  Truncation: EM=0.00 F1=0.0444 | 12.8s | 'I don't know.'
+
+[84/500] id=gpt4_68e94287 | type=temporal-reasoning | turns=541 | chars=494,993
+  Q: Which event happened first, my participation in the #PlankChallenge or my post about vegan chili recipe?
+  A: You posted a recipe for vegan chili on Instagram using the hashtag #FoodieAdventures first.
+  RLM:        EM=0.00 F1=0.0606 | 1307.6s | 0 tok | '[ERROR: Error generating completion: Error code: 429 - {'error': {'message': 'Ra'
+  Truncation: EM=0.00 F1=0.0000 | 1.0s | 'I don't know.'
+
+[85/500] id=86f00804 | type=single-session-user | turns=546 | chars=477,401
+  Q: What book am I currently reading?
+  A: The Seven Husbands of Evelyn Hugo
+  RLM:        EM=1.00 F1=1.0000 | 387.5s | 6194 tok | 'The Seven Husbands of Evelyn Hugo'
+  Truncation: EM=0.00 F1=0.0000 | 2.1s | 'I don't know.'
+
+[86/500] id=4388e9dd | type=single-session-assistant | turns=520 | chars=483,791
+  Q: I was going through our previous chat and I was wondering, what was Andy wearing in the script you wrote for the comedy movie scene?
+  A: Andy was wearing an untidy, stained white shirt.
+  RLM:        EM=1.00 F1=1.0000 | 398.2s | 5957 tok | 'Andy was wearing an untidy, stained white shirt.'
+  Truncation: EM=0.00 F1=0.0000 | 7.2s | 'I don't know.'
+
+[87/500] id=c7cf7dfd | type=single-session-assistant | turns=571 | chars=489,911
+  Q: I'm going back to our previous conversation about traditional Indian embroidery and tailoring techniques. Can you remind me of the name of that online store based in India that sells traditional Indian fabrics, threads, and embellishments?
+  A: Nostalgia

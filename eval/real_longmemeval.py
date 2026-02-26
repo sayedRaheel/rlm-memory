@@ -26,15 +26,18 @@ import time
 import random
 import argparse
 import re
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Optional
 
 _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 _MINIMAL = os.path.join(_ROOT, "..", "Recursive_language_model_rlm-minimal")
 sys.path.insert(0, _ROOT)
 sys.path.insert(0, os.path.abspath(_MINIMAL))
 
+import openai as _openai
+
 from rlm_memory import MemoryStore
 from rlm_memory.memory_rlm import MemoryRLM
+from rlm_memory.query_classifier import DATASET_TYPE_MAP
 from rlm.utils.llm import OpenAIClient
 
 
@@ -208,24 +211,78 @@ def truncation_baseline(store: MemoryStore, query: str, model: str,
 
 
 # ---------------------------------------------------------------------------
+# LLM-as-judge for preference questions
+# ---------------------------------------------------------------------------
+
+_JUDGE_PROMPT = """\
+You are evaluating an AI assistant's response to a preference-style memory question.
+
+Question: {question}
+AI Response: {response}
+
+Does this response meaningfully address the question based on what the user likely \
+shared about their preferences? Score from 0.0 to 1.0:
+  1.0 — directly answers with specific, personalised details
+  0.5 — partially relevant but generic or vague
+  0.0 — irrelevant, empty, or "I don't know"
+
+Reply with just a single decimal number (e.g. 0.8).\
+"""
+
+
+def llm_judge_preference(
+    pred: str,
+    question: str,
+    api_key: Optional[str] = None,
+    model: str = "gpt-4o-mini",
+) -> float:
+    """Score a preference-question answer 0.0–1.0 using an LLM judge."""
+    try:
+        client = _openai.OpenAI(
+            api_key=api_key or os.environ.get("OPENAI_API_KEY")
+        )
+        resp = client.chat.completions.create(
+            model=model,
+            messages=[{
+                "role": "user",
+                "content": _JUDGE_PROMPT.format(
+                    question=question, response=pred
+                ),
+            }],
+            max_tokens=10,
+            temperature=0,
+        )
+        raw = resp.choices[0].message.content.strip()
+        return min(1.0, max(0.0, float(raw)))
+    except Exception:
+        return 0.0
+
+
+# ---------------------------------------------------------------------------
 # Main eval loop
 # ---------------------------------------------------------------------------
 
 def run_eval(samples: List[Dict], model: str, sub_model: str,
-             max_iter: int, verbose: bool, trunc_chars: int) -> Dict:
+             max_iter: int, verbose: bool, trunc_chars: int,
+             max_workers: int = 10) -> Dict:
 
     type_results: Dict[str, Dict] = {}
     all_rlm_em, all_rlm_f1 = [], []
     all_trunc_em, all_trunc_f1 = [], []
     rlm_tokens, rlm_latencies, trunc_latencies = [], [], []
+    pref_judge_scores: List[float] = []
 
     errors = 0
+    api_key = os.environ.get("OPENAI_API_KEY")
 
     for i, sample in enumerate(samples):
-        qtype   = sample["question_type"]
+        qtype    = sample["question_type"]
         question = sample["question"]
         answer   = sample["answer"]
         qid      = sample["question_id"]
+
+        # Oracle query type mapping — uses ground-truth type from dataset
+        oracle_type = DATASET_TYPE_MAP.get(qtype, "FACTUAL")
 
         store = build_memory_store(sample)
         total_chars = store.total_chars()
@@ -238,7 +295,7 @@ def run_eval(samples: List[Dict], model: str, sub_model: str,
         else:
             augmented_q = question
 
-        print(f"\n[{i+1}/{len(samples)}] id={qid} | type={qtype} | "
+        print(f"\n[{i+1}/{len(samples)}] id={qid} | type={qtype} ({oracle_type}) | "
               f"turns={total_turns} | chars={total_chars:,}")
         print(f"  Q: {question}")
         print(f"  A: {answer}")
@@ -247,16 +304,18 @@ def run_eval(samples: List[Dict], model: str, sub_model: str,
             type_results[qtype] = {
                 "rlm_em": [], "rlm_f1": [],
                 "trunc_em": [], "trunc_f1": [],
+                "llm_judge": [],
             }
 
-        # ---- RLM-Memory ----
+        # ---- RLM-Memory (with oracle query type) ----
         rlm = MemoryRLM(
             model=model, sub_model=sub_model,
             max_iterations=max_iter, verbose=verbose,
+            max_workers=max_workers,
         )
         t0 = time.time()
         try:
-            rlm_ans = rlm.completion(store, augmented_q)
+            rlm_ans = rlm.completion(store, augmented_q, query_type=oracle_type)
         except Exception as e:
             rlm_ans = f"[ERROR: {e}]"
             errors += 1
@@ -270,8 +329,17 @@ def run_eval(samples: List[Dict], model: str, sub_model: str,
         rlm_latencies.append(rlm_lat)
         type_results[qtype]["rlm_em"].append(rlm_s["exact_match"])
         type_results[qtype]["rlm_f1"].append(rlm_s["f1"])
-        print(f"  RLM:        EM={rlm_s['exact_match']:.2f} F1={rlm_s['f1']:.4f} "
-              f"| {rlm_lat:.1f}s | {toks} tok | '{rlm_ans[:80]}'")
+
+        # LLM-as-judge for preference questions
+        judge_score = None
+        if oracle_type == "PREFERENCE":
+            judge_score = llm_judge_preference(rlm_ans, question, api_key, model)
+            pref_judge_scores.append(judge_score)
+            type_results[qtype]["llm_judge"].append(judge_score)
+
+        judge_str = f" judge={judge_score:.2f}" if judge_score is not None else ""
+        print(f"  RLM-v2 ({oracle_type}): EM={rlm_s['exact_match']:.2f} F1={rlm_s['f1']:.4f}"
+              f"{judge_str} | {rlm_lat:.1f}s | {toks} tok | '{rlm_ans[:80]}'")
 
         # ---- Truncation baseline ----
         t0 = time.time()
@@ -288,24 +356,27 @@ def run_eval(samples: List[Dict], model: str, sub_model: str,
         trunc_latencies.append(trunc_lat)
         type_results[qtype]["trunc_em"].append(trunc_s["exact_match"])
         type_results[qtype]["trunc_f1"].append(trunc_s["f1"])
-        print(f"  Truncation: EM={trunc_s['exact_match']:.2f} F1={trunc_s['f1']:.4f} "
+        print(f"  Truncation:           EM={trunc_s['exact_match']:.2f} F1={trunc_s['f1']:.4f} "
               f"| {trunc_lat:.1f}s | '{trunc_ans[:80]}'")
 
     def avg(lst): return round(sum(lst) / len(lst), 4) if lst else 0.0
 
     type_summary = {
         t: {
-            "n":        len(r["rlm_em"]),
-            "rlm_em":   avg(r["rlm_em"]),   "rlm_f1":   avg(r["rlm_f1"]),
-            "trunc_em": avg(r["trunc_em"]),  "trunc_f1": avg(r["trunc_f1"]),
+            "n":          len(r["rlm_em"]),
+            "rlm_em":     avg(r["rlm_em"]),   "rlm_f1":   avg(r["rlm_f1"]),
+            "trunc_em":   avg(r["trunc_em"]),  "trunc_f1": avg(r["trunc_f1"]),
+            "llm_judge":  avg(r["llm_judge"]) if r["llm_judge"] else None,
         }
         for t, r in type_results.items()
     }
 
     return {
-        "n_samples": len(samples),
-        "model":     model,
-        "errors":    errors,
+        "n_samples":            len(samples),
+        "model":                model,
+        "errors":               errors,
+        "adaptive_routing":     True,
+        "pref_llm_judge_avg":   avg(pref_judge_scores) if pref_judge_scores else None,
         "overall": {
             "rlm": {
                 "em":            avg(all_rlm_em),
@@ -344,9 +415,16 @@ def print_results(results: Dict):
           f"{o['rlm']['em']:>8.4f} {o['rlm']['f1']:>8.4f} "
           f"{o['rlm']['avg_tokens']:>10.0f} {o['rlm']['avg_latency_s']:>9.1f}s")
 
+    adaptive = results.get("adaptive_routing", False)
+    pref_judge = results.get("pref_llm_judge_avg")
+    if adaptive:
+        print(f"\n  [v2] Adaptive routing: ON  |  "
+              f"Preference LLM-judge avg: "
+              f"{pref_judge:.3f}" if pref_judge else "  [v2] Adaptive routing: ON")
+
     print("\nBy Question Type:")
-    print(f"  {'Type':<28} {'RLM EM':>7} {'RLM F1':>7} {'Trunc EM':>9} {'Trunc F1':>9}")
-    print("  " + "-" * 64)
+    print(f"  {'Type':<28} {'RLM EM':>7} {'RLM F1':>7} {'Judge':>7} {'Trunc EM':>9}")
+    print("  " + "-" * 67)
     order = [
         "temporal-reasoning", "multi-session", "knowledge-update",
         "single-session-user", "single-session-assistant", "single-session-preference",
@@ -354,8 +432,9 @@ def print_results(results: Dict):
     for t in order:
         if t in results["by_type"]:
             r = results["by_type"][t]
+            judge_str = f"{r['llm_judge']:>7.3f}" if r.get("llm_judge") else "     — "
             print(f"  {t:<28} {r['rlm_em']:>7.4f} {r['rlm_f1']:>7.4f} "
-                  f"{r['trunc_em']:>9.4f} {r['trunc_f1']:>9.4f}  (n={r['n']})")
+                  f"{judge_str} {r['trunc_em']:>9.4f}  (n={r['n']})")
 
     print("=" * 74)
 
@@ -363,7 +442,7 @@ def print_results(results: Dict):
     print("\n--- Published LongMemEval Results (real benchmark, for context) ---")
     pub = [
         ("Observational Mem.", "GPT-5-mini",  0.949, "trained"),
-        ("Hindsight",          "Gemini-3",    0.914, "trained"),
+        ("Hindsight",          "OS 20B+",     0.914, "trained"),
         ("MemBuilder",         "Qwen3-4B",    0.858, "fine-tuned"),
         ("Zep/Graphiti",       "GPT-4o",      0.712, "trained"),
         ("Full-ctx baseline",  "GPT-4o",      0.602, "no training"),
@@ -394,8 +473,10 @@ def main():
     parser.add_argument("--trunc-chars", type=int, default=32_000,
                         help="Truncation window in chars (default 32K)")
     parser.add_argument("--seed",      type=int, default=42)
-    parser.add_argument("--output",    default="real_longmemeval_results.json")
-    parser.add_argument("--verbose",   action="store_true")
+    parser.add_argument("--output",    default="adaptive_100_results.json")
+    parser.add_argument("--verbose",      action="store_true")
+    parser.add_argument("--max-workers",  type=int, default=10,
+                        help="Max parallel sub-agent threads per sample (default 10)")
     args = parser.parse_args()
 
     data    = load_dataset(args.data)
@@ -414,6 +495,7 @@ def main():
         max_iter=args.max_iter,
         verbose=args.verbose,
         trunc_chars=args.trunc_chars,
+        max_workers=args.max_workers,
     )
 
     out = os.path.join(os.path.dirname(__file__), args.output)

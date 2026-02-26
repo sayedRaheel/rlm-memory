@@ -45,6 +45,7 @@ def find_code_blocks(text: str) -> List[str]:
 
 from .memory_store import MemoryStore
 from .prompts import MEMORY_SYSTEM_PROMPT, MEMORY_ACTION_PROMPT, MEMORY_FINAL_PROMPT
+from .query_classifier import classify_query, DATASET_TYPE_MAP
 
 
 def _split_into_sessions(history_turns: List[Dict]) -> tuple:
@@ -140,14 +141,34 @@ class MemoryRLM:
     # Main entry point
     # ------------------------------------------------------------------
 
-    def completion(self, history: MemoryStore, query: str) -> str:
+    def completion(
+        self,
+        history: MemoryStore,
+        query: str,
+        query_type: Optional[str] = None,
+    ) -> str:
         """
         Search `history` for the answer to `query` using a REPL loop.
+
+        Args:
+            history    : MemoryStore with full conversation history
+            query      : the question to answer
+            query_type : optional override — one of FACTUAL, AGGREGATION,
+                         KNOWLEDGE_UPDATE, TEMPORAL, PREFERENCE.
+                         If None, a single cheap LLM call classifies the query.
 
         Returns the answer as a plain string.
         """
         t0 = time.time()
         self.llm.reset_usage()
+
+        # --- Classify query type (one cheap call if not provided) ---
+        import openai as _openai_mod
+        _client = _openai_mod.OpenAI(api_key=self._api_key)
+        if query_type is None:
+            query_type = classify_query(query, _client, self.model)
+        if self.verbose:
+            print(f"  [MemoryRLM] query_type={query_type}")
 
         # --- Build REPL environment with history as context ---
         history_str = history.to_string()
@@ -263,6 +284,49 @@ class MemoryRLM:
         repl_env.globals["search_history"]  = search_history
         repl_env.globals["get_recent"]      = get_recent
 
+        # ---- Adaptive: inject query_type + type-specific helpers ----
+        repl_env.globals["query_type"] = query_type
+
+        # Parse question_date from query string (injected as "[Today's date: ...]")
+        import re as _re2
+        _date_match = _re2.search(r"\[Today's date:\s*([^\]]+)\]", query)
+        repl_env.globals["question_date"] = (
+            _date_match.group(1).strip() if _date_match else None
+        )
+
+        if query_type == "AGGREGATION":
+            # Force full-scan wrapper: always queries ALL sessions
+            _orig_query = query
+
+            def aggregate_all_sessions(q=None):
+                """Scan ALL sessions in parallel. Always use this for AGGREGATION queries."""
+                actual_q = q if q is not None else _orig_query
+                return llm_query_parallel(sessions_text, session_dates, actual_q)
+
+            repl_env.globals["aggregate_all_sessions"] = aggregate_all_sessions
+
+        elif query_type == "KNOWLEDGE_UPDATE":
+            # Inject sessions reversed so index 0 = most recent session
+            repl_env.globals["sessions_newest_first"] = list(reversed(sessions_text))
+            repl_env.globals["dates_newest_first"]    = list(reversed(session_dates))
+
+        elif query_type == "TEMPORAL":
+            # Inject datetime utilities for date arithmetic
+            from datetime import datetime as _dt
+
+            def parse_date(s):
+                """Parse a date string into a datetime object. Tries common formats."""
+                for fmt in ["%Y-%m-%d", "%B %d, %Y", "%b %d, %Y",
+                            "%m/%d/%Y", "%d/%m/%Y", "%Y/%m/%d"]:
+                    try:
+                        return _dt.strptime(str(s).strip(), fmt)
+                    except Exception:
+                        pass
+                return None
+
+            repl_env.globals["datetime"]   = _dt
+            repl_env.globals["parse_date"] = parse_date
+
         # --- Conversation messages ---
         messages: List[Dict[str, str]] = [
             {"role": "system", "content": MEMORY_SYSTEM_PROMPT}
@@ -363,6 +427,7 @@ class MemoryRLM:
             "cost_usd": round(usage["total_cost"], 6),
             "history_turns": history.total_turns(),
             "history_chars": history.total_chars(),
+            "query_type": query_type,
         }
 
         return answer or ""

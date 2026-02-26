@@ -17,6 +17,10 @@ Quick start:
 from .chat import MemoryChat
 from .memory_store import MemoryStore, Turn
 from .memory_rlm import MemoryRLM
+from .query_classifier import classify_query, DATASET_TYPE_MAP, QUERY_TYPES
 
-__all__ = ["MemoryChat", "MemoryStore", "Turn", "MemoryRLM"]
-__version__ = "0.1.0"
+__all__ = [
+    "MemoryChat", "MemoryStore", "Turn", "MemoryRLM",
+    "classify_query", "DATASET_TYPE_MAP", "QUERY_TYPES",
+]
+__version__ = "0.2.0"

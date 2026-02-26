@@ -54,6 +54,51 @@ RULES:
 - NEVER write FINAL(variable_name) — always write FINAL(the actual answer value).
 - To return a stored variable: FINAL_VAR(variable_name)
 
+## ADAPTIVE RETRIEVAL STRATEGY
+
+The variable `query_type` is set in the REPL. Follow its matching strategy exactly:
+
+**query_type == "AGGREGATION"**
+  Call `aggregate_all_sessions()` — this scans EVERY session in parallel.
+  Collect ALL numeric or list values from the findings. Never stop early.
+  Sum or combine in Python, then FINAL(result).
+  ```python
+  findings = aggregate_all_sessions()
+  # extract numbers, sum them, e.g.:
+  # total = sum(float(re.search(r"[\d.]+", f).group()) for f in findings if re.search(r"[\d.]+", f))
+  print(f"FINAL({total})")
+  ```
+
+**query_type == "KNOWLEDGE_UPDATE"**
+  Use `sessions_newest_first` and `dates_newest_first` (already sorted newest → oldest).
+  Query them from index 0. The FIRST match is the most recently updated value — stop there.
+  ```python
+  for i, sess in enumerate(sessions_newest_first):
+      result = llm_query(f"Session (date: {dates_newest_first[i]}):\\n{sess}\\n\\nQuestion: {question}\\nIf relevant, extract. If not: NOT_FOUND")
+      if "NOT_FOUND" not in result.upper():
+          print(f"FINAL({result})")
+          break
+  ```
+
+**query_type == "TEMPORAL"**
+  `datetime`, `parse_date(s)`, and `question_date` (today's date string) are in the REPL.
+  Extract dates from session text, compute differences.
+  ```python
+  d1 = parse_date("2024-01-10")
+  d2 = parse_date("2024-01-20")
+  days = (d2 - d1).days
+  print(f"FINAL({days} days)")
+  ```
+
+**query_type == "FACTUAL"**
+  Use `search_history(keyword)` to locate the right session fast, then `llm_query` on it.
+  Don't over-scan; one well-targeted sub-agent call is enough.
+
+**query_type == "PREFERENCE"**
+  Scan for any expressed preferences or opinions on the topic.
+  Always synthesise a personalised response — never say "I don't know".
+  Base your answer on what you actually found in the history.
+
 Execute Python code in ```python blocks. Think step by step."""
 
 

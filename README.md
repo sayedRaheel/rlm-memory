@@ -35,21 +35,24 @@ Total History (490K chars)
 | Method | EM | F1 | Avg Tokens | Latency | Scalable? |
 |---|---|---|---|---|---|
 | Truncation (32K chars) | 5.0% | 4.0% | ~8K | 2.9s | ✓ |
+| RAG top-20 (ours) | 43.0% | 19.6% | ~8K | 7.5s | ✓ |
 | **RLM-Memory (ours)** | **46.0%** | **42.9%** | **37,216** | **~4s** ⚡ | **✓** |
 | Full-context (oracle) | 55.4% | — | ~120K | — | ✗ (fails >128K tokens) |
 
-> **Latency update:** parallel sub-agent execution (`llm_query_parallel` via `ThreadPoolExecutor`) reduces per-query latency from ~221s (sequential) to **~4s** — a **54× speedup** — with no accuracy loss. All sessions are queried simultaneously; wall time is bounded by the slowest single sub-agent call.
+> **Latency:** parallel sub-agent execution (`llm_query_parallel` via `ThreadPoolExecutor`) reduces per-query latency from ~221s (sequential) to **~4s** — a **54× speedup** — with no accuracy loss. All sessions queried simultaneously; wall time bounded by the slowest single sub-agent call.
+
+> **RAG vs RLM-Memory:** RAG is close in EM (43% vs 46%) but has dramatically lower F1 (19.6% vs 42.9%) — embedding retrieval returns verbose excerpts that partially match the gold string. RLM-Memory's programmatic approach extracts precise answers. RAG also fails on temporal reasoning (17.6% vs 41.2% EM) where date computations are required.
 
 ### By question type
 
-| Category | RLM-Memory EM | Truncation EM |
-|---|---|---|
-| single-session-user | **87.5%** | 0.0% |
-| single-session-assistant | **64.7%** | 5.9% |
-| knowledge-update | **62.5%** | 18.8% |
-| temporal-reasoning | **41.2%** | 5.9% |
-| multi-session | 22.2% | 0.0% |
-| single-session-preference | 0.0% | 0.0% |
+| Category | RLM-Memory EM | RAG EM | Truncation EM |
+|---|---|---|---|
+| single-session-user | **87.5%** | 75.0% | 0.0% |
+| single-session-assistant | 64.7% | 70.6% | 5.9% |
+| knowledge-update | **62.5%** | 56.3% | 18.8% |
+| temporal-reasoning | **41.2%** | 17.6% | 5.9% |
+| multi-session | 22.2% | **38.9%** | 0.0% |
+| single-session-preference | 0.0% | 0.0% | 0.0% |
 
 ---
 
@@ -100,13 +103,18 @@ export PYTHONPATH="."
 # Needle-in-a-Haystack (synthetic, no dataset needed)
 python rlm_memory/eval/niah_eval.py --turns 20 50 100 200 --runs 5
 
-# Real LongMemEval-S (100 class-balanced samples)
+# Real LongMemEval-S — RLM-Memory (100 class-balanced samples)
 python rlm_memory/eval/real_longmemeval.py \
   --data rlm_memory/eval/data/longmemeval_s_cleaned.json \
   --n 100
+
+# RAG baseline (same 100 samples, seed=42 — direct apples-to-apples)
+python rlm_memory/eval/rag_eval.py \
+  --data rlm_memory/eval/data/longmemeval_s_cleaned.json \
+  --n 100 --top-k 20
 ```
 
-Results are saved to `eval/real_longmemeval_100_results.json`.
+Results are saved to `eval/real_longmemeval_100_results.json` and `eval/rag_100_results.json`.
 
 ---
 
@@ -126,14 +134,17 @@ rlm_memory/
 ├── memory_store.py        # Append-only conversation turn store
 ├── prompts.py             # System + action prompts
 ├── chat.py                # MemoryChat drop-in wrapper
+├── rag_baseline.py        # RAG baseline (embedding retrieval)
 ├── demo.py                # Interactive demo
 ├── eval/
-│   ├── real_longmemeval.py           # Real LME-S evaluation script
-│   ├── niah_eval.py                  # Needle-in-a-haystack benchmark
-│   ├── synthetic_longmemeval.py      # Synthetic benchmark
-│   ├── real_longmemeval_100_results.json  # Our 100-sample results
-│   ├── niah_results.json             # NIAH results
-│   └── run_100_log.txt               # Full evaluation log
+│   ├── real_longmemeval.py                # Real LME-S evaluation script
+│   ├── rag_eval.py                        # RAG baseline evaluation
+│   ├── niah_eval.py                       # Needle-in-a-haystack benchmark
+│   ├── synthetic_longmemeval.py           # Synthetic benchmark
+│   ├── real_longmemeval_100_results.json  # RLM-Memory 100-sample results
+│   ├── rag_100_results.json               # RAG baseline 100-sample results
+│   ├── niah_results.json                  # NIAH results
+│   └── run_100_log.txt                    # Full RLM-Memory evaluation log
 ├── latex/
 │   ├── main.tex           # Paper (NeurIPS 2025 format)
 │   └── references.bib

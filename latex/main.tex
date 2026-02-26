@@ -548,6 +548,10 @@ characters (${\sim}530$ turns, ${\sim}50$ sessions). We evaluate on
     history in context. Prompted: ``If never mentioned, say `I don't know'.''
     This represents the default production behaviour when history exceeds
     the context window.
+  \item \textbf{RAG} (embedding retrieval baseline): \texttt{text-embedding-3-small}
+    embeddings for all turns; cosine similarity retrieval of top-20 turns
+    ($\pm$1 context-window expansion); \texttt{gpt-4o-mini} for answering.
+    Same 100 class-balanced samples, same scorer as \rlm{}.
   \item \textbf{Full-Context} (oracle, not scalable): Entire history in
     context. Same prompt. Valid only for histories that fit within the
     model's context window; infeasible at realistic long-term history lengths.
@@ -650,9 +654,9 @@ Table~\ref{tab:reallme} shows results on the real LongMemEval-S benchmark
 \begin{table}[h]
 \centering
 \caption{Results on real LongMemEval-S (100 class-balanced samples,
-\texttt{gpt-4o-mini}). Truncation window: 32K chars (last portion of
-history only). \rlm{} processes each session independently;
-the full ${\sim}490$K-char history is never loaded into one call.}
+\texttt{gpt-4o-mini}). Truncation window: 32K chars. \rlm{} processes
+each session independently; the full ${\sim}490$K-char history is never
+loaded into one call. RAG: top-20 turns by cosine similarity, same samples.}
 \label{tab:reallme}
 \small
 \begin{tabular}{@{}lcccc@{}}
@@ -661,14 +665,17 @@ the full ${\sim}490$K-char history is never loaded into one call.}
 \textbf{Avg Tokens} & \textbf{Avg Latency} \\
 \midrule
 Truncation (32K chars)        & 0.050 & 0.040 & ${\sim}$8K   & 2.9\,s \\
+RAG top-20 (ours)             & 0.430 & 0.196 & ${\sim}$8K   & 7.5\,s \\
 \textbf{\rlm{} (ours)} & \textbf{0.460} & \textbf{0.429} &
-\textbf{37,216} & \textbf{221\,s} \\
+\textbf{37,216} & \textbf{${\sim}$4\,s}$^{\ddagger}$ \\
 \midrule
 \multicolumn{5}{l}{\textit{Oracle (not scalable beyond ${\sim}$128K tokens):}} \\
 Full-Context (GPT-4o-mini)$^\dagger$ & 0.554 & --- & ${\sim}$120K & --- \\
 \bottomrule
 \multicolumn{5}{l}{\scriptsize $^\dagger$Loads entire 490K-char history in one call.
-Infeasible at realistic long-term history lengths.}
+Infeasible at realistic long-term history lengths.} \\
+\multicolumn{5}{l}{\scriptsize $^\ddagger$Parallel \texttt{llm\_query\_parallel()}
+(\texttt{ThreadPoolExecutor}); sequential baseline: 221\,s.}
 \end{tabular}
 \end{table}
 
@@ -684,24 +691,24 @@ the tokens.
 
 \begin{table}[h]
 \centering
-\caption{EM by question type on real LongMemEval-S.
-Truncation is the primary baseline. Full-context numbers from
-published results~\cite{longmemeval2025}.}
+\caption{EM and F1 by question type on real LongMemEval-S (100 samples).
+RAG: top-20 cosine-similarity retrieval, same samples and scorer.
+Truncation is the primary scalable baseline.}
 \label{tab:reallme_bytype}
 \small
-\begin{tabular}{@{}lcccc@{}}
+\begin{tabular}{@{}lccccc@{}}
 \toprule
 \textbf{Category} & \textbf{n} & \textbf{\rlm{} EM} &
-\textbf{\rlm{} F1} & \textbf{Trunc.\ EM} \\
+\textbf{\rlm{} F1} & \textbf{RAG EM} & \textbf{Trunc.\ EM} \\
 \midrule
-single-session-user      & 16 & \textbf{0.875} & \textbf{0.743} & 0.000 \\
-single-session-assistant & 17 & \textbf{0.647} & \textbf{0.620} & 0.059 \\
-knowledge-update         & 16 & \textbf{0.625} & 0.394          & 0.188 \\
-temporal-reasoning       & 17 & \textbf{0.412} & \textbf{0.475} & 0.059 \\
-multi-session            & 18 & 0.222          & 0.242          & 0.000 \\
-single-session-preference & 16 & 0.000         & 0.111          & 0.000 \\
+single-session-user      & 16 & \textbf{0.875} & \textbf{0.743} & 0.750          & 0.000 \\
+single-session-assistant & 17 & 0.647          & \textbf{0.620} & 0.706          & 0.059 \\
+knowledge-update         & 16 & \textbf{0.625} & 0.394          & 0.563          & 0.188 \\
+temporal-reasoning       & 17 & \textbf{0.412} & \textbf{0.475} & 0.176          & 0.059 \\
+multi-session            & 18 & 0.222          & 0.242          & \textbf{0.389} & 0.000 \\
+single-session-preference & 16 & 0.000         & 0.111          & 0.000          & 0.000 \\
 \midrule
-\textbf{Overall}         & 100 & \textbf{0.460} & \textbf{0.429} & 0.050 \\
+\textbf{Overall}         & 100 & \textbf{0.460} & \textbf{0.429} & 0.430 & 0.050 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -746,6 +753,7 @@ Zep/Graphiti~\cite{zep2025}      & GPT-4o        & 71.2\% & Temporal KG         
 \multicolumn{6}{l}{\textit{No-training systems:}} \\
 Full-context (oracle)~\cite{longmemeval2025} & GPT-4o    & 60.2\% & Full history in-context & \no & \no \\
 Full-context (oracle)~\cite{longmemeval2025} & GPT-4o-mini & 55.4\% & Full history in-context & \no & \no \\
+RAG top-20 (ours)        & gpt-4o-mini & 43.0\% & Embed.\ retrieval & \no & \yes \\
 \textbf{\rlm{} (ours)} & gpt-4o-mini & \textbf{46.0\%}
   & Sub-agent REPL & \textbf{\no} & \textbf{\yes} \\
 Truncation (default)     & gpt-4o-mini & 5.0\%
@@ -768,6 +776,23 @@ improvement.
 % ============================================================
 \section{Analysis}
 \label{sec:analysis}
+
+\paragraph{RAG vs.\ \rlm{}.}
+The RAG baseline achieves 43.0\% EM --- only 3 percentage points below
+\rlm{} --- but its F1 is 19.6\% versus \rlm{}'s 42.9\%.
+This gap reveals fundamentally different answer behaviours: RAG retrieves
+turn-level excerpts and generates verbose summaries that partially overlap
+with the gold string but rarely match it precisely; \rlm{}'s programmatic
+approach distils exact values from sub-agent findings.
+RAG \emph{surpasses} \rlm{} on multi-session aggregation (38.9\% vs.\
+22.2\% EM): semantic similarity retrieves relevant turns from multiple
+sessions when the question vocabulary overlaps the answer.
+However, RAG lags substantially on temporal-reasoning (17.6\% vs.\ 41.2\%),
+where questions require computing date differences between turns ---
+a computation that embedding similarity cannot perform but \rlm{}'s
+Python-equipped LLM can.
+RAG is also efficient: ${\sim}$8K tokens per query versus ${\sim}$37K for
+\rlm{}, at the cost of lower F1 precision.
 
 \paragraph{Why Temporal and Single-Session Win.}
 These question types have a simple structural property: the answer is a
@@ -909,6 +934,11 @@ python rlm_memory/eval/niah_eval.py --turns 20 50 100 200 --runs 5
 python rlm_memory/eval/real_longmemeval.py \
   --data rlm_memory/eval/data/longmemeval_s_cleaned.json \
   --n 100
+
+# RAG baseline (same 100 samples, seed=42)
+python rlm_memory/eval/rag_eval.py \
+  --data rlm_memory/eval/data/longmemeval_s_cleaned.json \
+  --n 100 --top-k 20
 \end{lstlisting}
 
 % ============================================================

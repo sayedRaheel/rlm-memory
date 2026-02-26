@@ -1,0 +1,45 @@
+{
+  "n_samples": 100,
+  "model": "gpt-4o-mini",
+  "embed_model": "text-embedding-3-small",
+  "top_k": 20,
+  "errors": 10,
+  "overall": {
+    "em": 0.43,
+    "f1": 0.1955,
+    "avg_tokens": 7930.69,
+    "avg_latency_s": 7.4746
+  },
+  "by_type": {
+    "single-session-preference": {
+      "n": 16,
+      "em": 0.0,
+      "f1": 0.0175
+    },
+    "single-session-assistant": {
+      "n": 17,
+      "em": 0.7059,
+      "f1": 0.4248
+    },
+    "temporal-reasoning": {
+      "n": 17,
+      "em": 0.1765,
+      "f1": 0.1524
+    },
+    "knowledge-update": {
+      "n": 16,
+      "em": 0.5625,
+      "f1": 0.194
+    },
+    "multi-session": {
+      "n": 18,
+      "em": 0.3889,
+      "f1": 0.0709
+    },
+    "single-session-user": {
+      "n": 16,
+      "em": 0.75,
+      "f1": 0.3172
+    }
+  }
+}

@@ -194,6 +194,20 @@ TRUNC_SYSTEM = (
 )
 
 
+def _retry_call(fn, max_retries: int = 6, base_delay: float = 5.0):
+    """Retry fn() with exponential backoff on 429 rate-limit errors."""
+    import random as _rand
+    for attempt in range(max_retries + 1):
+        try:
+            return fn()
+        except Exception as e:
+            if "429" in str(e) and attempt < max_retries:
+                sleep_time = base_delay * (2 ** attempt) + _rand.uniform(0, 2)
+                time.sleep(sleep_time)
+            else:
+                raise
+
+
 def truncation_baseline(store: MemoryStore, query: str, model: str,
                         max_chars: int = 32_000) -> str:
     hist = store.to_string()
@@ -207,7 +221,7 @@ def truncation_baseline(store: MemoryStore, query: str, model: str,
             f"Question: {query}"
         )},
     ]
-    return client.completion(msgs)
+    return _retry_call(lambda: client.completion(msgs))
 
 
 # ---------------------------------------------------------------------------
@@ -358,6 +372,9 @@ def run_eval(samples: List[Dict], model: str, sub_model: str,
         type_results[qtype]["trunc_f1"].append(trunc_s["f1"])
         print(f"  Truncation:           EM={trunc_s['exact_match']:.2f} F1={trunc_s['f1']:.4f} "
               f"| {trunc_lat:.1f}s | '{trunc_ans[:80]}'")
+
+        # Small inter-sample pause to avoid TPM bursting across samples
+        time.sleep(2)
 
     def avg(lst): return round(sum(lst) / len(lst), 4) if lst else 0.0
 

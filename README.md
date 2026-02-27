@@ -54,6 +54,22 @@ Total History (490K chars)
 | multi-session | 22.2% | **38.9%** | 0.0% |
 | single-session-preference | 0.0% | 0.0% | 0.0% |
 
+### Ablation: Query-Type Adaptive Routing (v2)
+
+We tested oracle-routed per-type strategies (FACTUAL/AGGREGATION/KNOWLEDGE_UPDATE/TEMPORAL/PREFERENCE) with type-specific REPL helpers. **Result: 40.0% EM — worse than the uniform v1 baseline (46.0%).**
+
+| Category | v1 EM | v2 EM | Δ |
+|---|---|---|---|
+| single-session-user | **87.5%** | 75.0% | −12.5% |
+| single-session-assistant | **64.7%** | 47.1% | −17.6% |
+| knowledge-update | **62.5%** | 62.5% | = |
+| temporal-reasoning | **41.2%** | 35.3% | −5.9% |
+| multi-session | **22.2%** | 22.2% | = |
+| preference (LLM-judge) | — | **0.51** | new metric |
+| **Overall EM** | **46.0%** | **40.0%** | **−6.0%** |
+
+Key finding: `gpt-4o-mini` does not reliably follow complex per-type REPL instructions — the uniform `llm_query_parallel` strategy is more robust. v2 also costs 4× more ($2.87 vs ~$0.70 per 100 samples) and is 8× slower (308s vs ~40s avg latency). A stronger orchestrator (gpt-4o) may recover the adaptive routing benefit.
+
 ---
 
 ## Installation

@@ -12,9 +12,27 @@ original RLM paper does for documents, but applied to live chat history.
 import os
 import sys
 import time
+import random
 import threading
 import concurrent.futures
 from typing import Optional, Dict, Any, List
+
+
+def _retry_openai_call(fn, max_retries: int = 6, base_delay: float = 5.0):
+    """
+    Call fn() with exponential backoff on 429 (rate limit) errors.
+    Retries up to max_retries times, sleeping base_delay * 2^attempt seconds.
+    """
+    for attempt in range(max_retries + 1):
+        try:
+            return fn()
+        except Exception as e:
+            err_str = str(e)
+            if "429" in err_str and attempt < max_retries:
+                sleep_time = base_delay * (2 ** attempt) + random.uniform(0, 2)
+                time.sleep(sleep_time)
+            else:
+                raise
 
 # ---------------------------------------------------------------------------
 # Import from existing rlm-minimal codebase
@@ -239,12 +257,16 @@ class MemoryRLM:
                     f"If nothing relevant, reply exactly: NOT_FOUND"
                 )
                 client = _oai.OpenAI(api_key=_api_key)
-                resp = client.chat.completions.create(
-                    model=_submodel,
-                    messages=[{"role": "user", "content": prompt}],
-                    max_tokens=300,
-                    temperature=0,
-                )
+
+                def _call():
+                    return client.chat.completions.create(
+                        model=_submodel,
+                        messages=[{"role": "user", "content": prompt}],
+                        max_tokens=300,
+                        temperature=0,
+                    )
+
+                resp = _retry_openai_call(_call)
                 content = resp.choices[0].message.content.strip()
                 # Track token usage
                 with _token_lock:
@@ -346,8 +368,8 @@ class MemoryRLM:
             )
             messages.append({"role": "user", "content": action})
 
-            # Call main LLM
-            response = self.llm.completion(messages)
+            # Call main LLM (with retry on rate limits)
+            response = _retry_openai_call(lambda: self.llm.completion(messages))
             messages.append({"role": "assistant", "content": response})
 
             if self.verbose:
@@ -409,7 +431,7 @@ class MemoryRLM:
                 "role": "user",
                 "content": MEMORY_FINAL_PROMPT.format(query=query),
             })
-            response = self.llm.completion(messages)
+            response = _retry_openai_call(lambda: self.llm.completion(messages))
             final = find_final_answer(response)
             answer = final[1] if final else response.strip()
 

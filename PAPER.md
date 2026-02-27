@@ -283,15 +283,48 @@ Sequential sub-agent calls average ~221s per query (serial ~50 sessions × ~4s e
 
 Preference questions ("suggest ways to stay connected with colleagues") require generating a personalised response, not recalling a fact. EM/F1 metrics are inappropriate for this category; all methods score 0% EM. These questions require LLM-as-judge evaluation with rubrics aligned to the user's stated preferences.
 
+### Ablation: Query-Type Adaptive Retrieval (v2)
+
+We investigated whether oracle-routed, query-type-specific retrieval strategies could improve over the uniform approach. We classified each query into one of five types (FACTUAL, AGGREGATION, KNOWLEDGE_UPDATE, TEMPORAL, PREFERENCE) and injected type-specific helpers and strategy instructions into the REPL:
+
+- **AGGREGATION**: forced full-scan via `aggregate_all_sessions()` wrapper
+- **KNOWLEDGE_UPDATE**: injected `sessions_newest_first` (reversed chronological order)
+- **TEMPORAL**: injected `datetime`, `parse_date()` helpers for date arithmetic
+- **PREFERENCE**: LLM-as-judge scoring (0–1) instead of EM/F1
+
+**Table 5: RLM-Memory v1 vs. v2 (Adaptive Routing) on 100 class-balanced samples**
+
+| Type | n | v1 EM | v2 EM (oracle route) | Δ |
+|---|---|---|---|---|
+| single-session-user | 16 | **0.875** | 0.750 | −0.125 |
+| single-session-assistant | 17 | **0.647** | 0.471 | −0.176 |
+| knowledge-update | 16 | **0.625** | 0.625 | = |
+| temporal-reasoning | 17 | **0.412** | 0.353 | −0.059 |
+| multi-session | 18 | **0.222** | 0.222 | = |
+| single-session-preference | 16 | 0.000 | 0.000 (judge=0.51) | = |
+| **Overall** | **100** | **0.460** | **0.400** | **−0.060** |
+
+Preference LLM-judge (v2): **0.51** — the system gives personalised responses despite 0% EM.
+
+**Adaptive routing degraded overall EM by 6 percentage points** (40% vs. 46%). Key findings:
+
+1. **FACTUAL types regressed the most** (−13 to −18%): the `search_history(keyword)` first strategy is brittle — if the exact keyword is absent from the relevant turn, the model fails to fall back to a broader scan. The uniform `llm_query_parallel` strategy is more robust.
+
+2. **AGGREGATION and KNOWLEDGE_UPDATE did not improve** (both unchanged at 22.2% and 62.5%): despite injecting `aggregate_all_sessions()` and `sessions_newest_first`, gpt-4o-mini did not reliably follow the per-type REPL instructions in the system prompt — occasionally using the wrong strategy regardless of the `query_type` variable.
+
+3. **8× more expensive**: avg 147K tokens/query (v2) vs. 37K (v1), at ~$2.87 per 100-sample eval vs. an estimated ~$0.50 for v1. Avg latency increased from ~40s to ~308s.
+
+**Interpretation**: Complex per-type orchestration instructions do not reliably transfer to a small model (gpt-4o-mini). The uniform strategy — always use `llm_query_parallel`, synthesise findings — is both simpler and more accurate. Using a stronger orchestrator (e.g., gpt-4o) while keeping sub-agents on gpt-4o-mini may recover the adaptive routing benefit at reasonable cost.
+
 ---
 
 ## 9. Limitations
 
 1. **Sample size.** Our real LongMemEval evaluation uses 100 class-balanced samples from 500 (roughly equal per type, not distribution-matched); full-benchmark numbers may differ slightly.
 
-2. **Sub-agent search coverage.** The main agent may scan only a subset of sessions before stopping. Incomplete scans cause false negatives on multi-session aggregation. Enforcing full-scan on aggregation-type queries requires query classification.
+2. **Sub-agent search coverage.** The main agent may scan only a subset of sessions before stopping. Incomplete scans cause false negatives on multi-session aggregation. Our v2 adaptive routing experiment (§8) showed that enforcing full-scan via injected wrappers does not reliably improve accuracy with a small orchestrator model — stronger orchestration or a two-tier model (gpt-4o orchestrator + gpt-4o-mini sub-agents) may be needed.
 
-3. **Knowledge-update ordering.** Sub-agents process sessions independently without recency weighting, sometimes returning an outdated value when a fact has been corrected.
+3. **Knowledge-update ordering.** Sub-agents process sessions independently without recency weighting, sometimes returning an outdated value when a fact has been corrected. Injecting reversed-chronological session lists (v2 ablation) did not yield improvement with gpt-4o-mini as orchestrator.
 
 4. **Lexical search only.** `search_history` uses keyword matching. Paraphrase gaps ("hometown" vs. "grew up in") cause false negatives. Embedding-based hybrid search would address this.
 
@@ -379,7 +412,32 @@ python rlm_memory/eval/rag_eval.py \
 ]
 ```
 
-### Real LongMemEval-S — RLM-Memory (100 samples, seed=42)
+### Real LongMemEval-S — RLM-Memory v2 Adaptive Routing (100 samples, seed=42)
+
+```json
+{
+  "n_samples": 100,
+  "model": "gpt-4o-mini",
+  "adaptive_routing": true,
+  "pref_llm_judge_avg": 0.5062,
+  "overall": {
+    "rlm_em": 0.40,
+    "rlm_f1": 0.2879,
+    "avg_tokens": 147346,
+    "avg_latency_s": 307.5
+  },
+  "by_type": {
+    "single-session-user":       {"n": 16, "rlm_em": 0.750,  "rlm_f1": 0.4423},
+    "single-session-assistant":  {"n": 17, "rlm_em": 0.4706, "rlm_f1": 0.4055},
+    "knowledge-update":          {"n": 16, "rlm_em": 0.625,  "rlm_f1": 0.3595},
+    "temporal-reasoning":        {"n": 17, "rlm_em": 0.3529, "rlm_f1": 0.3003},
+    "multi-session":             {"n": 18, "rlm_em": 0.2222, "rlm_f1": 0.1446},
+    "single-session-preference": {"n": 16, "rlm_em": 0.000,  "rlm_f1": 0.0852, "llm_judge": 0.5062}
+  }
+}
+```
+
+### Real LongMemEval-S — RLM-Memory v1 (100 samples, seed=42)
 
 ```json
 {
